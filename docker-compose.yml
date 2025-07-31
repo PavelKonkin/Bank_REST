@@ -1,9 +1,48 @@
 # 
 # docker-compose.yml — определяет сервисы для разработки и тестирования.
 
-Что нужно сделать:
-  - Настроить сервисы для:
-      - PostgreSQL (или MySQL) с начальной базой.
-      - Приложения Spring Boot (если нужно).
-  - Открыть нужные порты (например, 5432, 8080).
-  - Настроить volume для хранения данных БД.
+#Что нужно сделать:
+#  - Настроить сервисы для:
+#      - PostgreSQL (или MySQL) с начальной базой.
+#      - Приложения Spring Boot (если нужно).
+#  - Открыть нужные порты (например, 5432, 8080).
+#  - Настроить volume для хранения данных БД.
+
+
+services:
+  bankcards:
+    build: .
+    container_name: bankcards
+    restart: always
+    networks:
+      - internal_network
+    depends_on:
+      bankcards-db:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_bankcards:5432/${POSTGRE_BANKCARDS_DB_NAME:-bankcards}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRE_BANKCARDS_USER:-bankcards}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRE_BANKCARDS_PASS:-bankcards}
+      USERS_DB_CONTAINER_NAME: postgres_bankcards
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "8080:8080"
+  bankcards-db:
+    image: postgres:14-alpine
+    volumes:
+      - bankcards-data:/var/lib/postgresql/data
+    container_name: postgres_bankcards
+    restart: always
+    ports:
+      - "6542:5432"
+    networks:
+      - internal_network
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRE_BANKCARDS_PASS:-bankcards}
+      POSTGRES_USER: ${POSTGRE_BANKCARDS_USER:-bankcards}
+      POSTGRES_DB: ${POSTGRE_BANKCARDS_DB_NAME:-bankcards}
+volumes:
+  bankcards-data:
+networks:
+  internal_network:
+    driver: bridge

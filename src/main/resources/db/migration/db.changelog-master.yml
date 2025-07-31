@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: changesets/001-create-users-table.yml
+      relativeToChangelogFile: true
