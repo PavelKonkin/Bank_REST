@@ -14,7 +14,6 @@ spring:
     hibernate.ddl-auto: none
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         show_sql: true
         generate-ddl: false
@@ -31,7 +30,7 @@ spring:
 springdoc:
   api-docs:
     enabled: true
-    path: "docs/openapi.yaml"
 jwt:
   service:
     secret: ${JWT_SERVICE_SECRET:placeholder}
+    expiration: 86400000

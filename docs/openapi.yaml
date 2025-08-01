@@ -1,1 +1,61 @@
-# Здесь будет OpenAPI описание всех доступных эндпоинтов и моделей данных.
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+tags:
+- name: Аутентификация
+  description: API для получения JWT-токена
+paths:
+  /api/v1/auth/login:
+    post:
+      tags:
+      - Аутентификация
+      summary: Аутентификация и получение JWT-токена
+      description: Обменивает имя пользователя и пароль на JWT-токен для последующих
+        запросов к защищенным эндпоинтам.
+      operationId: login
+      requestBody:
+        description: Учетные данные пользователя для входа
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRequest"
+        required: true
+      responses:
+        "200":
+          description: "Успешная аутентификация, токен получен"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Некорректный формат запроса (Bad Request)
+        "401":
+          description: Неверные учетные данные (Unauthorized)
+components:
+  schemas:
+    AuthRequest:
+      required:
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+          description: Имя пользователя
+          example: admin
+        password:
+          type: string
+          description: Пароль
+          example: password
+      description: Запрос на аутентификацию
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: Сгенерированный JWT-токен
+      description: Ответ с JWT-токеном
