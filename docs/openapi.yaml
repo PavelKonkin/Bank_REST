@@ -12,6 +12,9 @@ security:
 tags:
 - name: Аутентификация
   description: API для получения JWT-токена
+- name: Управление пользователями (Admin)
+  description: "API для создания, получения и удаления пользователей. Доступно тол\
+    ько администраторам."
 paths:
   /api/v1/auth/login:
     post:
@@ -39,6 +42,144 @@ paths:
                 $ref: "#/components/schemas/AuthResponse"
         "401":
           description: Неверные учетные данные (Unauthorized)
+  /api/v1/admin/users:
+    get:
+      tags:
+      - Управление пользователями (Admin)
+      summary: Получить список всех пользователей
+      description: Возвращает полный список всех зарегистрированных пользователей.
+      operationId: getAllUsers
+      responses:
+        "200":
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "403":
+          description: Доступ запрещен (необходима роль ADMIN)
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserDto"
+        "401":
+          description: Не авторизован
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserDto"
+        "302":
+          description: Found
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserDto"
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - Управление пользователями (Admin)
+      summary: Создать нового пользователя
+      operationId: createUser
+      requestBody:
+        description: Данные нового пользователя
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "400":
+          description: Некорректные данные запроса
+        "401":
+          description: Не авторизован
+        "201":
+          description: Пользователь успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "403":
+          description: Доступ запрещен
+      security:
+      - bearerAuth: []
+  /api/v1/admin/users/{id}:
+    get:
+      tags:
+      - Управление пользователями (Admin)
+      summary: Получить пользователя по ID
+      operationId: getUserById
+      parameters:
+      - name: id
+        in: path
+        description: "ID пользователя, которого нужно найти"
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      responses:
+        "404":
+          description: Пользователь не найден
+        "401":
+          description: Не авторизован
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        "200":
+          description: Пользователь найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "403":
+          description: Доступ запрещен
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        "302":
+          description: Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - Управление пользователями (Admin)
+      summary: Удалить пользователя по ID
+      operationId: deleteUser
+      parameters:
+      - name: id
+        in: path
+        description: ID пользователя для удаления
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
+      responses:
+        "204":
+          description: Пользователь успешно удален
+        "404":
+          description: Пользователь не найден
+        "401":
+          description: Не авторизован
+        "403":
+          description: Доступ запрещен
+      security:
+      - bearerAuth: []
 components:
   schemas:
     AuthRequest:
@@ -63,6 +204,41 @@ components:
           type: string
           description: Сгенерированный JWT-токен
       description: Ответ с JWT-токеном
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор
+          format: int64
+          readOnly: true
+          example: 1
+        username:
+          type: string
+          description: Имя пользователя
+          example: admin_user
+        password:
+          type: string
+          description: Пароль
+          example: password
+        role:
+          type: string
+          description: Роль пользователя
+          example: ROLE_USER
+          enum:
+          - ROLE_ADMIN
+          - ROLE_USER
+      description: Сущность пользователя
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        role:
+          type: string
   securitySchemes:
     bearerAuth:
       type: http

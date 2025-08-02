@@ -19,6 +19,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
     }
+
     @Override
     public AuthResponse login(AuthRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
