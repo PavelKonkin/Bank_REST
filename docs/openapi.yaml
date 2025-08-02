@@ -1,10 +1,14 @@
 openapi: 3.0.1
 info:
-  title: OpenAPI definition
-  version: v0
+  title: Bank Card & Transaction API
+  description: "API для управления пользователями, банковскими картами и проведени\
+    я транзакций."
+  version: v1.1.0
 servers:
 - url: http://localhost:8080
   description: Generated server url
+security:
+- bearerAuth: []
 tags:
 - name: Аутентификация
   description: API для получения JWT-токена
@@ -25,14 +29,14 @@ paths:
               $ref: "#/components/schemas/AuthRequest"
         required: true
       responses:
+        "400":
+          description: Некорректный формат запроса (Bad Request)
         "200":
           description: "Успешная аутентификация, токен получен"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthResponse"
-        "400":
-          description: Некорректный формат запроса (Bad Request)
         "401":
           description: Неверные учетные данные (Unauthorized)
 components:
@@ -59,3 +63,9 @@ components:
           type: string
           description: Сгенерированный JWT-токен
       description: Ответ с JWT-токеном
+  securitySchemes:
+    bearerAuth:
+      type: http
+      name: bearerAuth
+      scheme: bearer
+      bearerFormat: JWT

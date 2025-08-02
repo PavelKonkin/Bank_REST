@@ -87,6 +87,24 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start-spring-boot</id>
+                        <!-- Запускаем приложение перед интеграционными тестами -->
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop-spring-boot</id>
+                        <!-- Останавливаем приложение после интеграционных тестов -->
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -113,25 +131,19 @@
             <plugin>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-maven-plugin</artifactId>
-                <version>1.4</version> <!-- Используйте актуальную версию -->
+                <version>1.4</version>
                 <executions>
                     <execution>
                         <id>integrate-openapi</id>
+                        <phase>integration-test</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
-                    <!-- URL, по которому плагин будет запрашивать документацию.
-                         Обычно это стандартный путь. -->
                     <apiDocsUrl>http://localhost:8080/v3/api-docs.yaml</apiDocsUrl>
-
-                    <!-- Имя файла, который будет создан -->
                     <outputFileName>openapi.yaml</outputFileName>
-
-                    <!-- Директория, куда будет сохранен файл.
-                         ${project.basedir} - это корень вашего проекта. -->
                     <outputDir>${project.basedir}/docs</outputDir>
                 </configuration>
             </plugin>
