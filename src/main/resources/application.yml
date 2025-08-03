@@ -34,3 +34,6 @@ jwt:
   service:
     secret: ${JWT_SECRET:placeholder}
     expiration: 86400000
+encryption:
+  secret:
+    key: ${ENCRYPTION_SECRET_KEY:placeholder}
