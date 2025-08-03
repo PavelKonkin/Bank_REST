@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,7 +53,7 @@ public class AuthController {
             description = "Учетные данные пользователя для входа",
             required = true,
             content = @Content(schema = @Schema(implementation = AuthRequest.class)))
-            @RequestBody AuthRequest request) {
+            @Valid @RequestBody AuthRequest request) {
         return authenticationService.login(request);
     }
 }

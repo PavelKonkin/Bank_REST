@@ -2,7 +2,6 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.CreateUserDto;
 import com.example.bankcards.dto.UserDto;
-import com.example.bankcards.entity.User;
 import com.example.bankcards.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -36,12 +36,12 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
                     content = { @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = User.class)))}),
-            @ApiResponse(responseCode = "401", description = "Не авторизован"),
-            @ApiResponse(responseCode = "403", description = "Доступ запрещен (необходима роль ADMIN)")
+                            array = @ArraySchema(schema = @Schema(implementation = UserDto.class)))}),
+            @ApiResponse(responseCode = "401", description = "Не авторизован", content = @Content),
+            @ApiResponse(responseCode = "403",
+                    description = "Доступ запрещен (необходима роль ADMIN)", content = @Content)
     })
     @GetMapping
-    @ResponseStatus(HttpStatus.FOUND)
     public List<UserDto> getAllUsers() {
         return userService.findAllUsers();
     }
@@ -50,13 +50,12 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пользователь найден",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = User.class))}),
-            @ApiResponse(responseCode = "401", description = "Не авторизован"),
-            @ApiResponse(responseCode = "403", description = "Доступ запрещен"),
+                            schema = @Schema(implementation = UserDto.class))}),
+            @ApiResponse(responseCode = "401", description = "Не авторизован", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен", content = @Content),
             @ApiResponse(responseCode = "404", description = "Пользователь не найден", content = @Content)
     })
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.FOUND)
     public UserDto getUserById(
             @Parameter(description = "ID пользователя, которого нужно найти", required = true, example = "1")
             @PathVariable Long id) {
@@ -65,9 +64,7 @@ public class UserController {
 
     @Operation(summary = "Создать нового пользователя")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Пользователь успешно создан",
-                    content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = User.class))}),
+            @ApiResponse(responseCode = "201", description = "Пользователь успешно создан", content =  @Content),
             @ApiResponse(responseCode = "400", description = "Некорректные данные запроса", content = @Content),
             @ApiResponse(responseCode = "401", description = "Не авторизован"),
             @ApiResponse(responseCode = "403", description = "Доступ запрещен")
@@ -77,8 +74,8 @@ public class UserController {
     public void createUser(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Данные нового пользователя", required = true,
-                    content = @Content(schema = @Schema(implementation = User.class)))
-            @RequestBody CreateUserDto user) {
+                    content = @Content(schema = @Schema(implementation = CreateUserDto.class)))
+            @Valid @RequestBody CreateUserDto user) {
         userService.createUser(user);
     }
 
@@ -87,7 +84,6 @@ public class UserController {
             @ApiResponse(responseCode = "204", description = "Пользователь успешно удален", content = @Content),
             @ApiResponse(responseCode = "401", description = "Не авторизован"),
             @ApiResponse(responseCode = "403", description = "Доступ запрещен"),
-            @ApiResponse(responseCode = "404", description = "Пользователь не найден", content = @Content)
     })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

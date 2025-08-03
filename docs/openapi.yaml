@@ -57,31 +57,11 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/User"
-        "403":
-          description: Доступ запрещен (необходима роль ADMIN)
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
                   $ref: "#/components/schemas/UserDto"
         "401":
           description: Не авторизован
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/UserDto"
-        "302":
-          description: Found
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/UserDto"
+        "403":
+          description: Доступ запрещен (необходима роль ADMIN)
       security:
       - bearerAuth: []
     post:
@@ -94,19 +74,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: "#/components/schemas/CreateUserDto"
         required: true
       responses:
         "400":
           description: Некорректные данные запроса
-        "401":
-          description: Не авторизован
         "201":
           description: Пользователь успешно создан
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
+        "401":
+          description: Не авторизован
         "403":
           description: Доступ запрещен
       security:
@@ -127,32 +103,18 @@ paths:
           format: int64
         example: 1
       responses:
-        "404":
-          description: Пользователь не найден
-        "401":
-          description: Не авторизован
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/UserDto"
         "200":
           description: Пользователь найден
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserDto"
+        "401":
+          description: Не авторизован
+        "404":
+          description: Пользователь не найден
         "403":
           description: Доступ запрещен
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/UserDto"
-        "302":
-          description: Found
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/UserDto"
       security:
       - bearerAuth: []
     delete:
@@ -172,8 +134,6 @@ paths:
       responses:
         "204":
           description: Пользователь успешно удален
-        "404":
-          description: Пользователь не найден
         "401":
           description: Не авторизован
         "403":
@@ -189,10 +149,14 @@ components:
       type: object
       properties:
         username:
+          maxLength: 255
+          minLength: 2
           type: string
           description: Имя пользователя
           example: admin
         password:
+          maxLength: 255
+          minLength: 2
           type: string
           description: Пароль
           example: password
@@ -204,41 +168,56 @@ components:
           type: string
           description: Сгенерированный JWT-токен
       description: Ответ с JWT-токеном
-    User:
+    CreateUserDto:
+      required:
+      - password
+      - role
+      - username
       type: object
       properties:
         id:
           type: integer
-          description: Уникальный идентификатор
+          description: Уникальный ID (игнорируется при создании)
           format: int64
           readOnly: true
-          example: 1
         username:
+          maxLength: 255
+          minLength: 2
           type: string
-          description: Имя пользователя
-          example: admin_user
+          description: Имя пользователя (логин)
+          example: new_user
         password:
+          maxLength: 255
+          minLength: 2
           type: string
-          description: Пароль
-          example: password
+          description: Пароль пользователя
+          writeOnly: true
+          example: Str0ngP@ssw0rd!
         role:
           type: string
-          description: Роль пользователя
+          description: "Роль пользователя. Допустимые значения: ROLE_USER, ROLE_ADMIN"
           example: ROLE_USER
-          enum:
-          - ROLE_ADMIN
-          - ROLE_USER
-      description: Сущность пользователя
+      description: DTO для создания нового пользователя
     UserDto:
       type: object
       properties:
         id:
           type: integer
+          description: Уникальный идентификатор пользователя
           format: int64
+          readOnly: true
+          example: 101
         username:
           type: string
+          description: Имя пользователя (логин)
+          readOnly: true
+          example: existing_user
         role:
           type: string
+          description: Роль пользователя
+          readOnly: true
+          example: ROLE_ADMIN
+      description: DTO с публичной информацией о пользователе (для ответа)
   securitySchemes:
     bearerAuth:
       type: http
