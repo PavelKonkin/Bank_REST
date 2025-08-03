@@ -32,8 +32,27 @@ paths:
               $ref: "#/components/schemas/AuthRequest"
         required: true
       responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
         "400":
           description: Некорректный формат запроса (Bad Request)
+          content: {}
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
         "200":
           description: "Успешная аутентификация, токен получен"
           content:
@@ -50,6 +69,30 @@ paths:
       description: Возвращает полный список всех зарегистрированных пользователей.
       operationId: getAllUsers
       responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
         "200":
           description: Успешно
           content:
@@ -58,10 +101,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/UserDto"
-        "401":
-          description: Не авторизован
         "403":
           description: Доступ запрещен (необходима роль ADMIN)
+        "401":
+          description: Не авторизован
       security:
       - bearerAuth: []
     post:
@@ -77,8 +120,27 @@ paths:
               $ref: "#/components/schemas/CreateUserDto"
         required: true
       responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
         "400":
           description: Некорректные данные запроса
+          content: {}
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
         "201":
           description: Пользователь успешно создан
         "401":
@@ -103,6 +165,29 @@ paths:
           format: int64
         example: 1
       responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Пользователь не найден
+          content: {}
+        "403":
+          description: Доступ запрещен
         "200":
           description: Пользователь найден
           content:
@@ -111,10 +196,6 @@ paths:
                 $ref: "#/components/schemas/UserDto"
         "401":
           description: Не авторизован
-        "404":
-          description: Пользователь не найден
-        "403":
-          description: Доступ запрещен
       security:
       - bearerAuth: []
     delete:
@@ -132,6 +213,30 @@ paths:
           format: int64
         example: 2
       responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
         "204":
           description: Пользователь успешно удален
         "401":
@@ -142,6 +247,22 @@ paths:
       - bearerAuth: []
 components:
   schemas:
+    ApiError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        message:
+          type: string
+        reason:
+          type: string
+        status:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
     AuthRequest:
       required:
       - password
