@@ -29,7 +29,7 @@ public class TransactionController {
             description = "Выполняет перевод средств между двумя картами. " +
                     "Пользователь должен быть владельцем карты-отправителя. " +
                     "Сумма перевода не может превышать баланс карты-отправителя.")
-    @ApiResponse(responseCode = "201", description = "Перевод успешно создан")
+    @ApiResponse(responseCode = "200", description = "Перевод успешно создан")
     @ApiResponse(responseCode = "400", description = "Неверные данные запроса (например, отрицательная сумма, недостаточный баланс)")
     @ApiResponse(responseCode = "403", description = "Доступ запрещен (пользователь не является владельцем карты-отправителя)")
     @ApiResponse(responseCode = "404", description = "Одна из карт не найдена")

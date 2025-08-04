@@ -2,6 +2,7 @@ package com.example.bankcards.security;
 
 import com.example.bankcards.entity.User;
 import com.example.bankcards.repository.UserRepository;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
+@Primary
 public class DatabaseUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 

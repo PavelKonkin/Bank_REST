@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -27,7 +29,8 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
     private static final String BAD_REQUEST = "Bad request";
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class,
+            BindException.class, HttpMessageNotReadableException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleValidationException(BindException ex) {
         log.info("Validation exception {}", ex.getMessage());
@@ -112,7 +115,7 @@ public class GlobalExceptionHandler {
 
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
+    @ExceptionHandler({BadCredentialsException.class, AuthorizationDeniedException.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ApiError handleBadCredentialsException(BadCredentialsException ex) {
         log.warn("Authentication failed: {}", ex.getMessage());
