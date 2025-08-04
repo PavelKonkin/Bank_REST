@@ -24,6 +24,9 @@ public class BankCard {
     @Convert(converter = CryptoConverter.class)
     private String cardNumber;
 
+    @Column(name = "card_number_hash", nullable = false, updatable = false)
+    private String cardNumberHash;
+
     @Column(name = "expiry_date", nullable = false)
     private YearMonth expiryDate;
 

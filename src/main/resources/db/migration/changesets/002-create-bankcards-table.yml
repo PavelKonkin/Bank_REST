@@ -23,8 +23,13 @@ databaseChangeLog:
                   type: VARCHAR
                   constraints:
                     nullable: false
+              - column:
+                  name: card_number_hash
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
                     unique: true
-                    uniqueConstraintName: uk_bank_cards_card_number
+                    uniqueConstraintName: uk_bank_cards_card_number_hash
               - column:
                   name: expiry_date
                   type: DATE

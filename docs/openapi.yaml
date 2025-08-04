@@ -15,7 +15,113 @@ tags:
 - name: Управление пользователями (Admin)
   description: "API для создания, получения и удаления пользователей. Доступно тол\
     ько администраторам."
+- name: Управление банковскими картами
+  description: "API для создания, получения и удаления банковских карт."
 paths:
+  /api/v1/bankcards:
+    get:
+      tags:
+      - Управление банковскими картами
+      summary: Получить все карты с пагинацией (ADMIN)
+      description: Возвращает страницу со всеми существующими картами. Доступно только
+        администраторам.
+      operationId: getAllCards
+      parameters:
+      - name: pageable
+        in: query
+        description: Параметры пагинации и сортировки
+        required: true
+        schema:
+          $ref: "#/components/schemas/Pageable"
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PageBankCardDto"
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - Управление банковскими картами
+      summary: Создать новую банковскую карту (ADMIN)
+      description: Создает новую карту для указанного пользователя. Доступно только
+        администраторам.
+      operationId: createCard
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBankCardDto"
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Карта с таким номером уже существует
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "400":
+          description: Неверные данные в запросе
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Пользователь-владелец не найден
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Доступ запрещен (не администратор)
+        "201":
+          description: Карта успешно создана
+      security:
+      - bearerAuth: []
   /api/v1/auth/login:
     post:
       tags:
@@ -47,6 +153,9 @@ paths:
         "400":
           description: Некорректный формат запроса (Bad Request)
           content: {}
+        "401":
+          description: Неверные учетные данные (Unauthorized)
+          content: {}
         "404":
           description: Not Found
           content:
@@ -59,8 +168,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthResponse"
-        "401":
-          description: Неверные учетные данные (Unauthorized)
   /api/v1/admin/users:
     get:
       tags:
@@ -87,6 +194,9 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Не авторизован
+          content: {}
         "404":
           description: Not Found
           content:
@@ -103,8 +213,6 @@ paths:
                   $ref: "#/components/schemas/UserDto"
         "403":
           description: Доступ запрещен (необходима роль ADMIN)
-        "401":
-          description: Не авторизован
       security:
       - bearerAuth: []
     post:
@@ -135,6 +243,12 @@ paths:
         "400":
           description: Некорректные данные запроса
           content: {}
+        "401":
+          description: Не авторизован
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
         "404":
           description: Not Found
           content:
@@ -143,10 +257,247 @@ paths:
                 $ref: "#/components/schemas/ApiError"
         "201":
           description: Пользователь успешно создан
-        "401":
-          description: Не авторизован
         "403":
           description: Доступ запрещен
+      security:
+      - bearerAuth: []
+  /api/v1/bankcards/my/block/{cardId}:
+    patch:
+      tags:
+      - Управление банковскими картами
+      summary: Запросить блокировку своей карты (USER)
+      description: Пользователь может запросить блокировку своей карты.
+      operationId: requestBlock
+      parameters:
+      - name: cardId
+        in: path
+        description: ID карты для блокировки
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Карта не найдена
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Доступ запрещен (попытка заблокировать чужую карту)
+        "200":
+          description: Карта успешно заблокирована
+      security:
+      - bearerAuth: []
+  /api/v1/bankcards/block/{cardId}:
+    patch:
+      tags:
+      - Управление банковскими картами
+      summary: Заблокировать карту по ID (ADMIN)
+      description: Принудительно блокирует любую карту в системе. Доступно только
+        администраторам.
+      operationId: blockCard
+      parameters:
+      - name: cardId
+        in: path
+        description: ID карты для блокировки
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Карта не найдена
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "200":
+          description: Карта успешно заблокирована
+        "403":
+          description: Доступ запрещен
+      security:
+      - bearerAuth: []
+  /api/v1/bankcards/activate/{cardId}:
+    patch:
+      tags:
+      - Управление банковскими картами
+      summary: Активировать карту по ID (ADMIN)
+      description: Активирует ранее заблокированную карту. Доступно только администраторам.
+      operationId: activateCard
+      parameters:
+      - name: cardId
+        in: path
+        description: ID карты для активации
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Карта не найдена
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "200":
+          description: Карта успешно активирована
+        "403":
+          description: Доступ запрещен
+      security:
+      - bearerAuth: []
+  /api/v1/bankcards/my:
+    get:
+      tags:
+      - Управление банковскими картами
+      summary: Просмотреть свои карты с фильтрацией (USER)
+      description: Возвращает страницу со своими картами с возможностью гибкой фильтрации.
+      operationId: getCurrentUserCards
+      parameters:
+      - name: status
+        in: query
+        description: "Фильтр по статусу карты (ACTIVE, BLOCKED, EXPIRED)"
+        required: false
+        schema:
+          type: string
+          enum:
+          - ACTIVE
+          - BLOCKED
+          - EXPIRED
+      - name: minBalance
+        in: query
+        description: "Фильтр по минимальному балансу (например, 1000.00)"
+        required: false
+        schema:
+          type: number
+      - name: expiryDateFrom
+        in: query
+        description: "Фильтр по сроку действия (не ранее указанной даты, формат: Г\
+          ГГГ-ММ)"
+        required: false
+        schema:
+          type: string
+      - name: pageable
+        in: query
+        description: Параметры пагинации и сортировки
+        required: true
+        schema:
+          $ref: "#/components/schemas/Pageable"
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "200":
+          description: Список карт успешно получен
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PageBankCardDto"
+        "403":
+          description: Доступ запрещен
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PageBankCardDto"
       security:
       - bearerAuth: []
   /api/v1/admin/users/{id}:
@@ -183,6 +534,9 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Не авторизован
+          content: {}
         "404":
           description: Пользователь не найден
           content: {}
@@ -194,8 +548,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserDto"
-        "401":
-          description: Не авторизован
       security:
       - bearerAuth: []
     delete:
@@ -231,6 +583,12 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Не авторизован
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
         "404":
           description: Not Found
           content:
@@ -239,8 +597,58 @@ paths:
                 $ref: "#/components/schemas/ApiError"
         "204":
           description: Пользователь успешно удален
+        "403":
+          description: Доступ запрещен
+      security:
+      - bearerAuth: []
+  /api/v1/bankcards/{cardId}:
+    delete:
+      tags:
+      - Управление банковскими картами
+      summary: Удалить карту по ID (ADMIN)
+      description: Безвозвратно удаляет карту из системы. Доступно только администраторам.
+      operationId: deleteCard
+      parameters:
+      - name: cardId
+        in: path
+        description: ID удаляемой карты
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
         "401":
-          description: Не авторизован
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Карта не найдена
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "204":
+          description: Карта успешно удалена
         "403":
           description: Доступ запрещен
       security:
@@ -263,6 +671,28 @@ components:
         timestamp:
           type: string
           format: date-time
+    CreateBankCardDto:
+      required:
+      - cardNumber
+      - expiryDate
+      - ownerId
+      type: object
+      properties:
+        cardNumber:
+          type: string
+          description: Номер банковской карты (16 цифр без пробелов)
+          example: "4276160012345678"
+        expiryDate:
+          pattern: "^(0[1-9]|1[0-2])/(\\d{2})$"
+          type: string
+          description: "Срок действия в формате ММ/ГГ (например, 12/28)"
+          example: 12/28
+        ownerId:
+          type: integer
+          description: ID владельца карты
+          format: int64
+          example: 1
+      description: DTO для создания новой банковской карты
     AuthRequest:
       required:
       - password
@@ -319,6 +749,124 @@ components:
           description: "Роль пользователя. Допустимые значения: ROLE_USER, ROLE_ADMIN"
           example: ROLE_USER
       description: DTO для создания нового пользователя
+    Pageable:
+      type: object
+      properties:
+        page:
+          minimum: 0
+          type: integer
+          format: int32
+        size:
+          minimum: 1
+          type: integer
+          format: int32
+        sort:
+          type: array
+          items:
+            type: string
+    BankCardDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Уникальный ID карты
+          format: int64
+          readOnly: true
+          example: 42
+        maskedCardNumber:
+          type: string
+          description: Маскированный номер карты
+          readOnly: true
+          example: '**** **** **** 5678'
+        expiryDate:
+          type: string
+          description: Срок действия в формате ММ/ГГГГ
+          readOnly: true
+          example: 12/2028
+        balance:
+          type: number
+          description: Текущий баланс на карте
+          readOnly: true
+          example: 15300.5
+        status:
+          type: string
+          description: "Статус карты (ACTIVE, BLOCKED, EXPIRED)"
+          readOnly: true
+          example: ACTIVE
+        ownerId:
+          type: integer
+          description: ID владельца карты
+          format: int64
+          readOnly: true
+          example: 1
+      description: DTO с публичной информацией о банковской карте
+    PageBankCardDto:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        first:
+          type: boolean
+        last:
+          type: boolean
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BankCardDto"
+        number:
+          type: integer
+          format: int32
+        sort:
+          type: array
+          items:
+            $ref: "#/components/schemas/SortObject"
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        sort:
+          type: array
+          items:
+            $ref: "#/components/schemas/SortObject"
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+    SortObject:
+      type: object
+      properties:
+        direction:
+          type: string
+        nullHandling:
+          type: string
+        ascending:
+          type: boolean
+        property:
+          type: string
+        ignoreCase:
+          type: boolean
     UserDto:
       type: object
       properties:

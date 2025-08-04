@@ -29,7 +29,9 @@ public class CryptoConverter implements AttributeConverter<String, String> {
 
     @PostConstruct
     public void init() {
-        key = new SecretKeySpec(secretKey.getBytes(), "AES");
+        byte[] decodedKey = Base64.getDecoder().decode(secretKey);
+        key = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+//        key = new SecretKeySpec(secretKey.getBytes(), "AES");
     }
 
     @Override
