@@ -42,12 +42,6 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "409":
-          description: Conflict
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiError"
         "400":
           description: "Неверные данные запроса (например, отрицательная сумма, не\
             достаточный баланс)"
@@ -55,14 +49,20 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "401":
-          description: Unauthorized
+        "404":
+          description: Одна из карт не найдена
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "404":
-          description: Одна из карт не найдена
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
           content:
             '*/*':
               schema:
@@ -101,26 +101,26 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "409":
-          description: Conflict
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiError"
         "400":
           description: "Неверные данные запроса (например, отрицательная сумма)"
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "401":
-          description: Unauthorized
+        "404":
+          description: Карта не найдена
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "404":
-          description: Карта не найдена
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
           content:
             '*/*':
               schema:
@@ -153,26 +153,26 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "409":
-          description: Conflict
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiError"
         "400":
           description: Bad Request
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "401":
-          description: Unauthorized
+        "404":
+          description: Not Found
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "404":
-          description: Not Found
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
           content:
             '*/*':
               schema:
@@ -205,26 +205,26 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "409":
-          description: Карта с таким номером уже существует
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiError"
         "400":
           description: Неверные данные в запросе
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "401":
-          description: Unauthorized
+        "404":
+          description: Пользователь-владелец не найден
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "404":
-          description: Пользователь-владелец не найден
+        "409":
+          description: Карта с таким номером уже существует
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
           content:
             '*/*':
               schema:
@@ -257,17 +257,8 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "409":
-          description: Conflict
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiError"
         "400":
           description: Некорректный формат запроса (Bad Request)
-          content: {}
-        "401":
-          description: Неверные учетные данные (Unauthorized)
           content: {}
         "404":
           description: Not Found
@@ -275,6 +266,15 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Неверные учетные данные (Unauthorized)
+          content: {}
         "200":
           description: "Успешная аутентификация, токен получен"
           content:
@@ -295,14 +295,20 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "409":
-          description: Conflict
+        "400":
+          description: Bad Request
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "400":
-          description: Bad Request
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
           content:
             '*/*':
               schema:
@@ -310,12 +316,6 @@ paths:
         "401":
           description: Не авторизован
           content: {}
-        "404":
-          description: Not Found
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiError"
         "200":
           description: Успешно
           content:
@@ -347,23 +347,23 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
+        "400":
+          description: Некорректные данные запроса
+          content: {}
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
         "409":
           description: Conflict
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "400":
-          description: Некорректные данные запроса
-          content: {}
         "401":
           description: Не авторизован
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiError"
-        "404":
-          description: Not Found
           content:
             '*/*':
               schema:
@@ -396,26 +396,26 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "409":
-          description: Conflict
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiError"
         "400":
           description: Bad Request
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "401":
-          description: Unauthorized
+        "404":
+          description: Карта не найдена
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "404":
-          description: Карта не найдена
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
           content:
             '*/*':
               schema:
@@ -449,26 +449,26 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "409":
-          description: Conflict
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiError"
         "400":
           description: Bad Request
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "401":
-          description: Unauthorized
+        "404":
+          description: Карта не найдена
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "404":
-          description: Карта не найдена
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
           content:
             '*/*':
               schema:
@@ -501,26 +501,26 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "409":
-          description: Conflict
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiError"
         "400":
           description: Bad Request
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "401":
-          description: Unauthorized
+        "404":
+          description: Карта не найдена
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "404":
-          description: Карта не найдена
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
           content:
             '*/*':
               schema:
@@ -575,26 +575,26 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "409":
-          description: Conflict
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiError"
         "400":
           description: Bad Request
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "401":
-          description: Unauthorized
+        "404":
+          description: Not Found
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "404":
-          description: Not Found
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
           content:
             '*/*':
               schema:
@@ -628,26 +628,26 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "409":
-          description: Conflict
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiError"
         "400":
           description: Bad Request
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "401":
-          description: Unauthorized
+        "404":
+          description: Not Found
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "404":
-          description: Not Found
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
           content:
             '*/*':
               schema:
@@ -682,23 +682,23 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "409":
-          description: Conflict
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiError"
         "400":
           description: Bad Request
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "401":
-          description: Не авторизован
-          content: {}
         "404":
           description: Пользователь не найден
+          content: {}
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Не авторизован
           content: {}
         "403":
           description: Доступ запрещен
@@ -731,26 +731,26 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "409":
-          description: Conflict
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiError"
         "400":
           description: Bad Request
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "401":
-          description: Не авторизован
+        "404":
+          description: Not Found
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "404":
-          description: Not Found
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Не авторизован
           content:
             '*/*':
               schema:
@@ -783,26 +783,26 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "409":
-          description: Conflict
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiError"
         "400":
           description: Bad Request
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "401":
-          description: Unauthorized
+        "404":
+          description: Карта не найдена
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "404":
-          description: Карта не найдена
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
           content:
             '*/*':
               schema:
