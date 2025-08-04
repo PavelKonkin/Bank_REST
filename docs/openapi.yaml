@@ -10,6 +10,8 @@ servers:
 security:
 - bearerAuth: []
 tags:
+- name: Transactions
+  description: Операции по переводам и балансу
 - name: Аутентификация
   description: API для получения JWT-токена
 - name: Управление пользователями (Admin)
@@ -18,6 +20,117 @@ tags:
 - name: Управление банковскими картами
   description: "API для создания, получения и удаления банковских карт."
 paths:
+  /api/v1/transactions:
+    post:
+      tags:
+      - Transactions
+      summary: Создать перевод с карты на карту
+      description: Выполняет перевод средств между двумя картами. Пользователь должен
+        быть владельцем карты-отправителя. Сумма перевода не может превышать баланс
+        карты-отправителя.
+      operationId: createTransaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTransactionDto"
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "400":
+          description: "Неверные данные запроса (например, отрицательная сумма, не\
+            достаточный баланс)"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Одна из карт не найдена
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "201":
+          description: Перевод успешно создан
+        "403":
+          description: Доступ запрещен (пользователь не является владельцем карты-отправителя)
+      security:
+      - bearerAuth: []
+  /api/v1/cards/{id}/deposit:
+    post:
+      tags:
+      - Transactions
+      summary: Пополнить баланс карты
+      description: Увеличивает баланс указанной карты. Пользователь должен быть владельцем
+        карты.
+      operationId: depositToCard
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DepositDto"
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "400":
+          description: "Неверные данные запроса (например, отрицательная сумма)"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Карта не найдена
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Доступ запрещен (пользователь не является владельцем карты)
+        "200":
+          description: Баланс успешно пополнен
+      security:
+      - bearerAuth: []
   /api/v1/bankcards:
     get:
       tags:
@@ -500,6 +613,53 @@ paths:
                 $ref: "#/components/schemas/PageBankCardDto"
       security:
       - bearerAuth: []
+  /api/v1/balance:
+    get:
+      tags:
+      - Transactions
+      summary: Получить общий баланс по всем картам
+      description: Возвращает суммарный баланс по всем картам текущего аутентифицированного
+        пользователя.
+      operationId: getTotalBalance
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "200":
+          description: Баланс успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TotalBalanceDto"
+      security:
+      - bearerAuth: []
   /api/v1/admin/users/{id}:
     get:
       tags:
@@ -671,6 +831,28 @@ components:
         timestamp:
           type: string
           format: date-time
+    CreateTransactionDto:
+      required:
+      - amount
+      - fromCardId
+      - toCardId
+      type: object
+      properties:
+        fromCardId:
+          type: integer
+          format: int64
+        toCardId:
+          type: integer
+          format: int64
+        amount:
+          type: number
+    DepositDto:
+      required:
+      - amount
+      type: object
+      properties:
+        amount:
+          type: number
     CreateBankCardDto:
       required:
       - cardNumber
@@ -827,11 +1009,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SortObject"
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
         numberOfElements:
           type: integer
           format: int32
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
         empty:
           type: boolean
     PageableObject:
@@ -844,16 +1026,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SortObject"
+        unpaged:
+          type: boolean
+        paged:
+          type: boolean
         pageNumber:
           type: integer
           format: int32
         pageSize:
           type: integer
           format: int32
-        paged:
-          type: boolean
-        unpaged:
-          type: boolean
     SortObject:
       type: object
       properties:
@@ -867,6 +1049,11 @@ components:
           type: string
         ignoreCase:
           type: boolean
+    TotalBalanceDto:
+      type: object
+      properties:
+        totalBalance:
+          type: number
     UserDto:
       type: object
       properties:
