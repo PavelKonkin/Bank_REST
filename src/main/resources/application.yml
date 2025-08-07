@@ -38,3 +38,12 @@ encryption:
   secret:
     key: ${ENCRYPTION_SECRET_KEY:placeholder}
   hash-pepper: ${ENCRYPTION_HASH_PEPPER:placeholder}
+# ===============================
+# CORS Configuration
+# ===============================
+# URL фронтенд-приложения, которому разрешено делать запросы.
+# Значение берется из переменной окружения FRONTEND_URL.
+# Если переменная не задана, используется http://localhost:3000 для локальной разработки.
+app:
+  cors:
+    allowed-origins: ${FRONTEND_URL:http://localhost:3000,http://localhost:4200,http://localhost:5173}

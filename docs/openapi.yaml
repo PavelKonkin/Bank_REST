@@ -67,7 +67,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiError"
-        "201":
+        "200":
           description: Перевод успешно создан
         "403":
           description: Доступ запрещен (пользователь не является владельцем карты-отправителя)
@@ -316,6 +316,8 @@ paths:
         "401":
           description: Не авторизован
           content: {}
+        "403":
+          description: Доступ запрещен (необходима роль ADMIN)
         "200":
           description: Успешно
           content:
@@ -324,8 +326,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/UserDto"
-        "403":
-          description: Доступ запрещен (необходима роль ADMIN)
       security:
       - bearerAuth: []
     post:
@@ -1026,16 +1026,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SortObject"
-        unpaged:
-          type: boolean
-        paged:
-          type: boolean
         pageNumber:
           type: integer
           format: int32
         pageSize:
           type: integer
           format: int32
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
     SortObject:
       type: object
       properties:

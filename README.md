@@ -20,6 +20,7 @@
 - `ENCRYPTION_HASH_PEPPER`: для расчета уникального хэша номеров карт (длина 32 байта, закодированный в Base64).
 - `JWT_SECRET`: секрет для JWT (длина 32 байта, закодированный в Base64).
 - `POSTGRE_BANKCARDS_DB_NAME`, `POSTGRE_BANKCARDS_USER`, `POSTGRE_BANKCARDS_PASS`: данные для PostgreSQL.
+- `FRONTEND_URL`: URL (или список URL) фронтенд-приложения, которому разрешено делать запросы 
 
 ## Сборка и запуск
 
